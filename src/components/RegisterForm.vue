@@ -59,8 +59,8 @@ with this file. If not, see
         </v-text-field>
 
         <v-card-actions class="d-flex justify-end">
-          <v-btn color="error"
-                 text>Annuler</v-btn>
+          <!-- <v-btn color="error"
+                 text>Annuler</v-btn> -->
 
           <v-btn color="success"
                  type="submit"
@@ -80,15 +80,15 @@ export default {
       showPassword: false,
       data: {
         pamInfo: {
-          name: "PAM Admin",
+          name: "",
           url: window.origin,
           address: "",
           statusPlatform: "online",
         },
         adminInfo: {
-          name: "admin 1",
-          urlAdmin: "http://localhost:4040",
-          registerKey: "vWPUxmjO4pONfY6oPfRZ",
+          name: "",
+          urlAdmin: "",
+          registerKey: "",
         },
       },
     };

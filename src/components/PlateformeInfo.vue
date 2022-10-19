@@ -45,17 +45,29 @@ with this file. If not, see
                   :subTitle="data.registerKey" />
 
         <ListItem :title="'Token de la plateforme d\'authentification'"
-                  :subTitle="data.tokenBosAdmin" />
+                  :subTitle="data.tokenPamToAdmin" />
       </div>
 
-      <v-card-actions class="d-flex justify-end">
-        <v-btn color="error"
-               @click="deletePlatform"
-               text>Supprimer La plateforme</v-btn>
+      <v-card-actions>
+        <v-row>
+          <v-col cols="6">
+            <v-btn block
+                   color="error"
+                   @click="deletePlatform"
+                   text>
+              <span style="white-space: normal">Supprimer La plateforme</span>
+            </v-btn>
+          </v-col>
 
-        <v-btn color="success"
-               @click="updatePlatform"
-               text>Envoyer les nouvelles données</v-btn>
+          <v-col cols="6">
+            <v-btn block
+                   color="success"
+                   @click="updatePlatform"
+                   text>
+              <span style="white-space: normal">Mettre à jour les données</span>
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-card-actions>
     </v-card>
   </div>

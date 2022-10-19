@@ -23,15 +23,23 @@ with this file. If not, see
 -->
 
 <template>
-  <v-container class="_container">
-    <RegisterForm v-if="!authPlatformInfo"
+  <v-container class="_container"
+               fluid>
+    <RegisterForm v-if="page === pages.creation"
                   :showError="showError"
                   @submit="registerAuthPlateform" />
 
-    <PlateformeInfo v-else
+    <PlateformeInfo v-else-if="page === pages.info"
                     @delete="deletePlatform"
                     @update="updatePlatform"
                     :data="authPlatformInfo" />
+
+    <div class="loading"
+         v-else-if="page === pages.loading">
+      <v-progress-circular :size="70"
+                           color="primary"
+                           indeterminate></v-progress-circular>
+    </div>
   </v-container>
 </template>
 
@@ -48,13 +56,23 @@ export default Vue.extend({
     PlateformeInfo,
   },
   data() {
+    this.pages = Object.freeze({
+      create: 1,
+      loading: 1,
+      info: 3,
+    });
     return {
       showError: false,
+      page: this.pages.create,
     };
   },
   async mounted() {
+    this.page = this.pages.loading;
     await this.getAuthPlatformInfo();
+
+    if (!this.authPlatformInfo) this.page = this.pages.creation;
   },
+
   methods: {
     ...mapActions([
       "getAuthPlatformInfo",
@@ -63,17 +81,84 @@ export default Vue.extend({
       "deleteAuthPlatform",
     ]),
     async registerAuthPlateform(data: any) {
+      let isSuccess;
       try {
+        this.page = this.pages.loading;
         await this._registerAuthPlatform(data);
+        isSuccess = true;
       } catch (error) {
+        isSuccess = false;
         this.showError = true;
       }
+
+      this.$swal({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        icon: isSuccess ? "success" : "error",
+        text: isSuccess
+          ? "Plateforme ajoutée"
+          : "oups, une erreur s'est produite !",
+      });
+
+      this.page = isSuccess ? this.pages.info : this.pages.creation;
     },
+
     async deletePlatform() {
-      await this.deleteAuthPlatform();
+      return this.$swal({
+        title: "Supprimer",
+        text: `Êtes-vous sûre de vouloir supprimer cette plateforme ?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonClass: "successBtn",
+        cancelButtonClass: "errorBtn",
+        confirmButtonText: "Oui",
+        cancelButtonText: "Annuler",
+        buttonsStyling: false,
+        icon: "warning",
+      }).then(async ({ isConfirmed }) => {
+        if (!isConfirmed) return;
+
+        const isSuccess = await this.deleteAuthPlatform();
+
+        if (isSuccess) this.page = this.pages.creation;
+
+        this.$swal({
+          toast: true,
+          position: "bottom-end",
+          showConfirmButton: false,
+          timer: 3000,
+          icon: isSuccess ? "success" : "error",
+          text: isSuccess
+            ? "Plateforme supprimée"
+            : "oups, une erreur s'est produite !",
+        });
+      });
     },
+
     async updatePlatform() {
-      await this.updateAuthPlatform();
+      let isSuccess;
+      try {
+        this.page = this.pages.loading;
+        await this.updateAuthPlatform();
+        isSuccess = true;
+      } catch (error) {
+        isSuccess = false;
+      }
+
+      this.$swal({
+        toast: true,
+        position: "bottom-end",
+        showConfirmButton: false,
+        timer: 3000,
+        icon: isSuccess ? "success" : "error",
+        text: isSuccess
+          ? "Mis à jour envoyée"
+          : "oups, une erreur s'est produite !",
+      });
+
+      this.page = this.pages.info;
     },
   },
   computed: {
@@ -81,7 +166,8 @@ export default Vue.extend({
   },
   watch: {
     authPlatformInfo() {
-      console.log("this.authPlatformInfo", this.authPlatformInfo);
+      if (this.authPlatformInfo) this.page = this.pages.info;
+      else this.page = this.pages.creation;
       // this.authPlatformInfo
       //   ? (this.isRegistered = true)
       //   : (this.isRegistered = false);
@@ -90,9 +176,37 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped>
+<style lang="scss">
 ._container {
   width: 100%;
   height: 100%;
+
+  .loading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+</style>
+
+<style>
+.successBtn {
+  width: 60px !important;
+  height: 40px;
+  border: 1px solid green;
+  color: green;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+.errorBtn {
+  width: 75px !important;
+  height: 40px;
+  border: 1px solid #ff5252;
+  color: #ff5252;
+  border-radius: 5px;
+  margin: 5px;
 }
 </style>

@@ -27,7 +27,7 @@ import axios from "axios";
 const http = axios.create({ baseURL: "http://localhost:8065/api/v1/pam" });
 
 export function getRegisteredAuthPlatformRequest() {
-    return http.get("/get_bos_credential");
+    return http.get("/get_pam_to_auth_credential");
 }
 
 export function registerAuthPlatformRequest(data: any) {

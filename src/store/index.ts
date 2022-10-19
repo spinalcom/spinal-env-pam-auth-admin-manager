@@ -62,16 +62,23 @@ export default new Vuex.Store({
 
     async _registerAuthPlatform({ commit }: any, data: any) {
       const response = await registerAuthPlatformRequest(data);
-      if (response.data) commit(SET_AUTH_PLATFORM_INFO, response.data);
+
+      if (response.data) {
+        commit(SET_AUTH_PLATFORM_INFO, response.data);
+        return response.data;
+      }
     },
 
-    async updateAuthPlatform({ commit }: any) {
-      const response = await updateAuthPlatformRequest();
+    async updateAuthPlatform() {
+      return updateAuthPlatformRequest();
     },
 
     async deleteAuthPlatform({ commit }: any) {
       const response = await deleteAuthPlatformRequest();
-      if (response.data) commit(DELETE_AUTH_PLATFORM_INFO, response.data);
+      if (response.data) {
+        commit(DELETE_AUTH_PLATFORM_INFO, response.data);
+        return response.data;
+      }
     },
   },
 });
