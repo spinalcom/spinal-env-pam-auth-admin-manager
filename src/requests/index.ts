@@ -24,7 +24,12 @@
 
 import axios from "axios";
 
-const http = axios.create({ baseURL: "http://localhost:8065/api/v1/pam" });
+const endpoint = "/api/v1/pam";
+const host = (process.env.SPINAL_API_URL || "").replace(`/\/$/`, el => "");
+const baseURL = host.match(new RegExp(endpoint)) ? host : host + endpoint;
+
+export const http = axios.create({ baseURL });
+
 
 export function getRegisteredAuthPlatformRequest() {
     return http.get("/get_pam_to_auth_credential");
